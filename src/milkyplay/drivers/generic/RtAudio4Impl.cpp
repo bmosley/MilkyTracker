@@ -95,9 +95,9 @@ public:
             return 1024;
         case RtAudio::WINDOWS_DS:
             return 2048;
+        default:
+            return 2048;
         }
-
-        return 2048;
     }
 
     // On error return a negative value
