@@ -554,7 +554,8 @@ void SampleEditorControl::paint(PPGraphicsAbstract* g)
 	{
 		// Round to next lowest 256 samples
 		mp_sint32 offsetLeft = positionToSample(currentPosition) & ~0xFF;
-		mp_sint32 offsetRight = std::min(offsetLeft + 256, 65535);
+		using namespace std;  // min is a #define on Windows, so std::min() will error
+		mp_sint32 offsetRight = min(offsetLeft + 256, 65535);
 
 		if (offsetLeft >> 8 <= 0xFF)
 		{
