@@ -35,7 +35,18 @@
 #include "XModule.h"
 #include "XMFile.h"
 #include "MyIO.h"
-#include "zzip_lib.h"
+#include <zzip/lib.h>
+
+static const struct zzip_plugin_io milkytracker_zzip_io =
+{
+    &Myopen,
+    &Myclose,
+    &Myread,
+    &Mylseek,
+    &Myfsize,
+    1, 1,
+    NULL
+};
 
 ZipExtractor::ZipExtractor(const PPSystemString& archivePath) :
 	archivePath(archivePath)
@@ -45,7 +56,7 @@ ZipExtractor::ZipExtractor(const PPSystemString& archivePath) :
 bool ZipExtractor::parseZip(pp_int32& err, bool extract, const PPSystemString* outFile)
 {
     int i;
-	__zzipfd fd;
+	int fd;
     
 	ZZIP_DIR * dir;
     zzip_error_t rv;
@@ -57,13 +68,13 @@ bool ZipExtractor::parseZip(pp_int32& err, bool extract, const PPSystemString* o
 		const SYSCHAR* fileName = archivePath;
 		fd = Myopen((const zzip_char_t*)fileName, O_RDONLY);
         
-		if (fd == (__zzipfd)-1) 
+		if (fd == -1)
 		{ 
 			err = 1;
 			return false;
 		}
         
-		if (! (dir = zzip_dir_fdopen(fd, &rv)))
+		if (! (dir = zzip_dir_fdopen_ext_io(fd, &rv, NULL, (zzip_plugin_io_t) &milkytracker_zzip_io)))
         {
 			err = 2;
 			return false;
